@@ -33,3 +33,5 @@ apt install -y libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl lib
 
 icinga2 api setup
 systemctl restart icinga2
+
+

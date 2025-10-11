@@ -9,7 +9,8 @@ services:
     ports:
     networks: 
       icingaNet:
-        ipv4_address: 10.18.0.10
+        ipv4_address: 172.18.0.10
+    # command: [sed, -i '/agentaddress/c\agentaddress 0.0.0.0" /etc/snmpd/snmpd.conf ]
   
   master2:
     image: ./master
@@ -20,7 +21,7 @@ services:
     ports:
     networks: 
       icingaNet:
-        ipv4_address: 10.18.0.11
+        ipv4_address: 172.18.0.11
   web:
     image: ./web
     container_name: web
