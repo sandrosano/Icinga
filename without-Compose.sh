@@ -79,9 +79,9 @@ read -p "Everything okay? Lets Continue, press enter key.."  REPLY
 #
 echo "Web config"
 docker run -d --name web --net icinganet --ip 172.18.0.12 --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro sandrosano/icingaweb0-1   
-echo ' config apache'
-docker exec -it web /bin/bash 
+
+
 docker exec -it web /bin/bash -c 'icingacli setup token create' | tee ./web/token.txt
-#
+docker exec -it web /bin/bash -c 'apt install -y icingadb-web'
 #
 read -p "Everything okay? Lets Continue, press enter key.."  REPLY

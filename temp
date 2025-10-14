@@ -1,1 +1,0 @@
-object Endpoint 'master1' {    host = '172.18.0.10' } object Endpoint 'master2' {    host = '172.18.0.11'
