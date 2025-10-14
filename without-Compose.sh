@@ -4,10 +4,10 @@ docker container rm master1 master2 bbdd web sonda influx grafana
 
 docker network create --subnet=172.18.0.0/16 icinganet
 docker build ./master/. -t sandrosano/icingamaster0-1
-
+docker build ./web/. -t sandrosano/icingaweb0-1
 
 docker run -d --name master1 --net icinganet --ip 172.18.0.10 --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro sandrosano/icingamaster0-1   
-# unpriviledged alternative but i dont care about SEC NOW.
+echo 'unpriviledged alternative might be avilable but i dont care about sec NOW in dev mode. generally , systemD in unprivileged docker is difficult to get working properly.'
 # docker run -d --name master2 --tmpfs /tmp --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro jrei/systemd-debian /install.sh
 echo "Master1 config"
 docker exec master1 /bin/bash -c 'sh /config.sh'
@@ -18,38 +18,70 @@ echo "Master2 config"
 docker exec master2 /bin/bash -c 'sh /config.sh'
 #
 #
+read -p "Everything okay? Lets Continue, press enter key.." REPLY
 #
-#pass= $(< ./passwords/passmysql)
+#
+echo 'secure Password management will be introduced later when everything works.'
 docker run --name bbdd  --net icinganet --ip 172.18.0.13 -e MYSQL_ROOT_PASSWORD=myrootpw -d mysql:8
-#  for doccker compose:  https://hub.docker.com/_/mysql/
-echo "bbdd config"
-# docker cp ./bbdd/config.sh bbdd:/config.sh
-# docker exec bbdd /bin/bash -c '/config.sh' ALTERNATIVLY UNTIL END_BBDD_CONFIG here the config:
-docker container restart bbdd
-# pass=$(< ../passwords/passicingadbmysql)
-# docker exec -it bbdd /bin/bash -c 'mysql_secure_installation'docke
-docker exec -it bbdd /bin/bash -c 'mysql -u root -pmyrootpw "CREATE DATABASE icingadb;
-CREATE USER 'icingadb'@'%' IDENTIFIED BY "icing12bns98h4";
-GRANT ALL ON icingadb.* TO 'icingadb'@'%';GRANT ROLE_ADMIN on *.* TO 'icingadb'@'%';
-GRANT SESSION_VARIABLES_ADMIN on*.* TO 'icingadb'@'%';
-GRANT SYSTEM_VARIABLES_ADMIN on*.* TO 'icingadb'@'%';
-"'
-# END_BBDD_CONFIG
+echo "bbdd user"
+wait 2
+docker cp ./bbdd/user.sql bbdd:/user.sql
+docker exec -it bbdd /bin/bash -c 'mysql -u root -pmyrootpw  < /user.sql' 
+docker exec -it bbdd /bin/bash -c 'mysql -u root -pmyrootpw -e "SET PERSIST require_secure_transport=OFF;"'
+docker exec -it bbdd /bin/bash -c 'mysql -u root -pmyrootpw -e "set global log_bin_trust_function_creators=1"' 
 #
 #
+read -p "Everything okay? Lets Continue, press enter key.." REPLY
 #
-# passicdb=$(< ./passwords/passicingadbmysql)
-echo "DB Init"
-docker exec -it master1 /bin/bash -c "mysql -u icingadb --password=icing12bns98h4 -172.18.0.13 </usr/share/icingadb/schema/mysql/schema.sql"
+echo "Master-to-DB Init, table schema"
+echo 'Dev Mode: NO SSL configuren for DB connection: --skip-ssl'
+docker exec -it master1 /bin/bash -c "mysql -u icingadb -p icingadb --password=icing12bns98h4 --host=172.18.0.13 --skip-ssl </usr/share/icingadb/schema/mysql/schema.sql"
 docker exec master1 /bin/bash -c 'systemctl enable --now icingadb'
-docker exec -it master2 /bin/bash -c 'mysql -u icingadb -p icingadb -h 172.18.0.13 </usr/share/icingadb/schema/mysql/schema.sql'
 docker exec master2 /bin/bash -c 'systemctl enable --now icingadb'
+docker exec master1 /bin/bash -c 'systemctl restart icingadb'
+docker exec master2 /bin/bash -c 'systemctl restart icingadb'
 #
+#
+read -p "Everything okay? Lets Continue, press enter.."   REPLY
 #
 #
 echo "Master1 Wizard"
-docker exec -it master1 /bin/icinga2 node wizard
+docker exec -it master1 /bin/bash -c "icinga2 node wizard"
+docker exec -it master1 /bin/bash -c 'systemctl restart icinga2'
+docker exec -it master1 /bin/bash -c 'vi /etc/icinga2/zones.conf'
+docker exec -it master1 /bin/bash -c "sed -i \"6c\object Endpoint \"master1\" {    host = \"172.18.0.10\" } object Endpoint \"master2\" {    host = \"172.18.0.11\" \" /etc/icinga2/zones.conf"
+docker exec -it master1 /bin/bash -c "sed -i \"10c\        endpoints = [\"master1\",\"master2\"]  \" /etc/icinga2/zones.conf"
+
+docker exec -it master1 /bin/bash -c 'systemctl restart icinga2'
+docker exec -it master1 /bin/bash -c "sed -i \"5c\  accept_config = true\" /etc/icinga2/features-enabled/api.conf"
+docker exec -it master1 /bin/bash -c "sed -i \"6c\  accept_commands = true\" /etc/icinga2/features-enabled/api.conf"
+docker exec -it master1 /bin/bash -c "sed -i \"7c\  ticket_salt = TicketSalt  }\" /etc/icinga2/features-enabled/api.conf"
+docker exec -it master1 /bin/bash -c 'vi /etc/icinga2/features-enabled/api.conf'
+docker exec -it master1 /bin/bash -c 'systemctl restart icinga2'
+docker exec -it master1 /bin/bash -c 'systemctl restart icinga2.service'
+
 echo "Master2 Wiszard"
-docker exec -it master2 /bin/icinga2 node wizard
-
-
+docker exec -it master2 /bin/bash -c "icinga2 node wizard"
+docker exec -it master2 /bin/bash -c 'systemctl restart icinga2'
+docker exec -it master2 /bin/bash -c "sed -i \"6c\object Endpoint \"master2\" {    host = \"172.18.0.11\" } object Endpoint \"master1\" {    host = \"172.18.0.10\" \" /etc/icinga2/zones.conf"
+docker exec -it master2 /bin/bash -c "sed -i \"10c\        endpoints = [\"master2\",\"master1\"]  \" /etc/icinga2/zones.conf"
+docker exec -it master2 /bin/bash -c 'systemctl restart icinga2'
+docker exec -it master2 /bin/bash -c "sed -i \"5c\  accept_config = true\" /etc/icinga2/features-enabled/api.conf"
+docker exec -it master2 /bin/bash -c "sed -i \"6c\  accept_commands = true\" /etc/icinga2/features-enabled/api.conf"
+docker exec -it master2 /bin/bash -c "sed -i \"7c\  ticket_salt = TicketSalt  }\" /etc/icinga2/features-enabled/api.conf"
+docker exec -it master2 /bin/bash -c 'systemctl restart icinga2'
+docker exec -it master2 /bin/bash -c 'vi /etc/icinga2/constants.conf'
+docker exec -it master2 /bin/bash -c 'systemctl restart icinga2.service'
+#
+#
+read -p "Everything okay? Lets Continue, press enter key.."  REPLY
+#
+#
+echo "Web config"
+docker run -d --name web --net icinganet --ip 172.18.0.12 --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro sandrosano/icingaweb0-1   
+echo ' config apache'
+docker exec -it web /bin/bash 
+docker exec -it web /bin/bash -c 'icingacli setup token create' | tee ./web/token.txt
+#
+#
+read -p "Everything okay? Lets Continue, press enter key.."  REPLY

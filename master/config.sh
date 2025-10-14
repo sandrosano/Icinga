@@ -18,6 +18,6 @@ icinga2 feature enable icingadb
 systemctl restart icinga2 
 
 # pass=$(< ../passwords/passicingadbmysql)
-pass=icing12bns98h4
-sed -i "/password: /c\ password: $pass" /etc/icingadb/config.yml
+#line 24
+sed -i "24c\  password: icing12bns98h4" /etc/icingadb/config.yml
 systemctl restart icingadb
