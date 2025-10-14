@@ -1,8 +1,25 @@
+
 apt-get update 
 apt-get upgrade -y 
-apt-get install -y snmpd apt-transport-https wget 
-sed -i '/agentaddress/c\agentaddress 0.0.0.0" /etc/snmpd/snmpd.conf 
-sed -i '/rocommunity=/a\rocommunity icinga' /etc/snmpd/snmpd.conf 
+apt-get install -y snmpd apt-transport-https wget vim cron
+
+
+
+
+
+sed -i "/^127.0.1.1/a\
+    172.18.0.10 master1.icinga.com master1  \n
+    172.18.0.11 master2.icinga.com master2
+    " /etc/hosts
+
+sed -i "/^agentaddress/c\
+    agentaddress 0.0.0.0
+    " /etc/snmpd/snmpd.conf 
+
+sed -i '/^rocommunity=/a\rocommunity icinga
+    ' /etc/snmpd/snmpd.conf 
+
+
 systemctl enable snmpd 
 
 wget -O icinga-archive-keyring.deb "https://packages.icinga.com/icinga-archive-keyring_latest+debian$(
@@ -31,7 +48,5 @@ apt install -y perl libsnmp-perl libnet-snmp-perl
 apt install -y libxml-libxml-perl libjson-perl libwww-perl libxml-xpath-perl libnet-telnet-perl libnet-ntp-perl libnet-dns-perl libdbi-perl libdbd-mysql-perl libdbd-pg-perl 
 
 
-icinga2 api setup
-systemctl restart icinga2
-
-
+apt install -y icingadb-redis
+apt install -y icingadb gnupg  default-mysql-client

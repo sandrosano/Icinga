@@ -14,6 +14,3 @@ RUN chown -R nagios:nagios /var/lib/icinga2/certs
 
 EXPOSE 5665 80 22 443
 USER root
-# ENTRYPOINT ["/lib/systemd/systemd"]
-# CMD ["/lib/systemd/systemd"]
-# CMD ["/bin/bash"]

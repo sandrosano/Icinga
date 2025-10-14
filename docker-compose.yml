@@ -1,74 +1,121 @@
-version: '0.1'
+version: '3.8'
+
+# networks:
+#   icingaNet:
+#     name: icingaNet
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 172.20.0.0/16
+#           gateway: 172.20.0.1
+# volumes:
+#   - master1
+#   - master2
+#   - influxdb
+#   - grafana
+#   - bbdd
+
 services:
   master1:
-    image: ./master
+    image: sandrosano/icingamaster0-1 
+    # user: root:root
     container_name: master1
     hostname: master1
+    tmpfs:
+      - /tmp
+      - /run
+      - /run/lock
     volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 172.18.0.10
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+    privileged: true #important to run systemd inside container
+    # stdin_open: true
+    # tty: true
+    # command: ["/sbin/init"]
+    # volumes: master1:/etc/icinga2
+    # depends_on:
+
+    # networks: 
+    #   - icingaNet
+      #    ipv4_address: 172.18.0.10
     # command: [sed, -i '/agentaddress/c\agentaddress 0.0.0.0" /etc/snmpd/snmpd.conf ]
   
-  master2:
-    image: ./master
-    container_name: master2
-    hostname: master2
-    volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 172.18.0.11
-  web:
-    image: ./web
-    container_name: web
-    hostname: web
-    volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 10.18.0.11
-  bbdd:
-    image: ./bbdd
-    container_name: bbdd
-    hostname: bbdd
-    volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 10.18.0.12
-  influx:
-    image: ./influx
-    container_name: influx
-    hostname: influx
-    volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 10.18.0.13
-  grafana:
-    image: ./grafana
-    container_name: grafana
-    hostname: grafana
-    volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 10.18.0.14
-  sonda:
-    image: ./sonda
-    container_name: sonda
-    hostname: sonda
-    volumes:
-    depends_on:
-    ports:
-    networks: 
-      icingaNet:
-        ipv4_address: 10.18.0.15
+  # master2:
+  #   image: sandrosano/icingamaster0-1 
+  #   user: root:root
+  #   container_name: master2
+  #   hostname: master2
+  #   tmpfs:
+  #     - /tmp
+  #     - /run
+  #     - /run/lock
+  #   volumes:
+  #     - /sys/fs/cgroup:/sys/fs/cgroup:ro
+  #   privileged: true #important to run systemd inside container
+  #   stdin_open: true
+  #   tty: true
+  #   # command: ["/sbin/init"]
+  #   networks:
+  #     - icingaNet
+  #     #     ipv4_address: 172.18.0.11
+  
+
+  # web:
+  #   image: ./web
+  #   container_name: web
+  #   hostname: web
+  #   volumes:
+  #   depends_on:
+  #   ports:
+  #   networks: 
+  #     icingaNet:
+  #       ipv4_address: 172.18.0.11
+  # bbdd:
+  #   image: ./bbdd
+  #   container_name: bbdd
+  #   hostname: bbdd
+  #   volumes:
+  #   depends_on:
+  #   ports:
+  #   networks: 
+  #     icingaNet:
+  #       ipv4_address: 172.18.0.12
+  # influx:
+  #   image: ./influx
+  #   container_name: influx
+  #   hostname: influx
+  #   volumes:
+  #   depends_on:
+  #   ports:
+  #   networks: 
+  #     icingaNet:
+  #       ipv4_address: 172.18.0.13
+  # grafana:
+  #   image: ./grafana
+  #   container_name: grafana
+  #   hostname: grafana
+  #   volumes:
+  #   depends_on:
+  #   ports:
+  #   networks: 
+  #     icingaNet:
+  #       ipv4_address: 172.18.0.14
+  # sonda:
+  #   image: ./sonda
+  #   container_name: sonda
+  #   hostname: sonda
+  #   volumes:
+  #   depends_on:
+  #   ports:
+  #   networks: 
+  #     icingaNet:
+  #       ipv4_address: 172.18.0.15
+    # winproxy:
+  #   image: ./sonda
+  #   container_name: sonda
+  #   hostname: sonda
+  #   volumes:
+  #   depends_on:
+  #   ports:
+  #   networks: 
+  #     icingaNet:
+  #       ipv4_address: 172.18.0.16
