@@ -57,3 +57,24 @@ icinga web module represents graphana graphs
 # install
 create IPS table
 master1: 192.168.1.(or whatever router brings) .10 , master2 .11, web .12 , bbdd (mysql) .13 , influx .14, graphana .15, sonda( satellite) .16, windowsClient .17, 
+
+# introduction icinga WEB
+- visualisation÷: 
+  - Host with search feature
+  - service with search feature
+  - host groups with search feature, grouping hosts to better visualise them and their cvonnections
+- director
+  -  host objects we can 
+     -  make taemplates to   facilitate creation of hosts
+     -  group these hosts to vsiisualize them better
+  -     nofiications
+  -     users which recieve notifications
+  -     program doowntimes
+  -     import data source, where we can read only, we can integrate these metrics and syncronise and twe do not create an dedicated host for thes
+  -     activity log for changes to director
+  -     config commit dates
+  -     icinga infrastructure with
+        -     endpoints (masters) and sondas
+        -     zones with hosts which connect to one or another of these zones
+        -     cerate variables to use in service commands
+        -     email and schangestate notifications

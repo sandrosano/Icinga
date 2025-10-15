@@ -7,3 +7,7 @@ GRANT SYSTEM_VARIABLES_ADMIN on*.* TO 'icingadb'@'%';
 CREATE DATABASE icingaweb2;
 CREATE USER 'icingaweb2'@'%' IDENTIFIED BY 'icingawebPW';
 GRANT ALL ON icingaweb2.* TO 'icingaweb2'@'%';
+
+CREATE DATABASE director CHARACTER SET 'utf8';
+CREATE USER 'director'@'%' IDENTIFIED BY 'directorPW';
+GRANT ALL ON director.* TO 'director'@'%';

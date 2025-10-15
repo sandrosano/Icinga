@@ -1,0 +1,1 @@
+{"Version": 2, "mysql_dynamic_variables": {"require_secure_transport": {"Value": "OFF", "Metadata": {"Host": "localhost", "User": "root", "Timestamp": 1760467122376142}}}}

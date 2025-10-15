@@ -1,5 +1,5 @@
 #  Without Compose if Docker-compose wont work.
-docker stop master1 master2 bbdd web sonda influx grafana
+# docker stop master1 master2 bbdd web sonda influx grafana
 docker container rm master1 master2 bbdd web sonda influx grafana
 
 docker network create --subnet=172.18.0.0/16 icinganet
@@ -22,7 +22,7 @@ read -p "Everything okay? Lets Continue, press enter key.." REPLY
 #
 #
 echo 'secure Password management will be introduced later when everything works.'
-docker run --name bbdd  --net icinganet --ip 172.18.0.13 -e MYSQL_ROOT_PASSWORD=myrootpw -d mysql:8
+docker run --name bbdd -v ./bbdd/data:/var/lib/mysql  --net icinganet --ip 172.18.0.13 -e MYSQL_ROOT_PASSWORD=myrootpw -d mysql:8
 echo "bbdd user"
 wait 2
 docker cp ./bbdd/user.sql bbdd:/user.sql
@@ -48,10 +48,11 @@ read -p "Everything okay? Lets Continue, press enter.."   REPLY
 echo "Master1 Wizard"
 docker exec -it master1 /bin/bash -c "icinga2 node wizard"
 docker exec -it master1 /bin/bash -c 'systemctl restart icinga2'
-docker exec -it master1 /bin/bash -c 'vi /etc/icinga2/zones.conf'
-docker exec -it master1 /bin/bash -c "sed -i \"6c\object Endpoint \"master1\" {    host = \"172.18.0.10\" } object Endpoint \"master2\" {    host = \"172.18.0.11\" \" /etc/icinga2/zones.conf"
-docker exec -it master1 /bin/bash -c "sed -i \"10c\        endpoints = [\"master1\",\"master2\"]  \" /etc/icinga2/zones.conf"
 
+docker exec -it master1 /bin/bash -c "sed -i '6c\object Endpoint \"master1\" {    host = \"172.18.0.10\" } ' /etc/icinga2/zones.conf"
+docker exec -it master1 /bin/bash -c "sed -i '7c\object Endpoint \"master2\" {    host = \"172.18.0.11\" } ' /etc/icinga2/zones.conf"
+docker exec -it master1 /bin/bash -c "sed -i '10c\        endpoints = [\"master1\",\"master2\"]  ' /etc/icinga2/zones.conf"
+docker exec -it master1 /bin/bash -c 'vi /etc/icinga2/zones.conf'
 docker exec -it master1 /bin/bash -c 'systemctl restart icinga2'
 docker exec -it master1 /bin/bash -c "sed -i \"5c\  accept_config = true\" /etc/icinga2/features-enabled/api.conf"
 docker exec -it master1 /bin/bash -c "sed -i \"6c\  accept_commands = true\" /etc/icinga2/features-enabled/api.conf"
@@ -63,8 +64,9 @@ docker exec -it master1 /bin/bash -c 'systemctl restart icinga2.service'
 echo "Master2 Wiszard"
 docker exec -it master2 /bin/bash -c "icinga2 node wizard"
 docker exec -it master2 /bin/bash -c 'systemctl restart icinga2'
-docker exec -it master2 /bin/bash -c "sed -i \"6c\object Endpoint \"master2\" {    host = \"172.18.0.11\" } object Endpoint \"master1\" {    host = \"172.18.0.10\" \" /etc/icinga2/zones.conf"
-docker exec -it master2 /bin/bash -c "sed -i \"10c\        endpoints = [\"master2\",\"master1\"]  \" /etc/icinga2/zones.conf"
+docker exec -it master2 /bin/bash -c "sed -i '6c\object Endpoint \"master2\" {    host = \"172.18.0.11\" } ' /etc/icinga2/zones.conf"
+docker exec -it master2 /bin/bash -c "sed -i '7c\object Endpoint \"master1\" {    host = \"172.18.0.10\" } ' /etc/icinga2/zones.conf"
+docker exec -it master2 /bin/bash -c "sed -i '10c\        endpoints = [\"master2\",\"master1\"]  ' /etc/icinga2/zones.conf"
 docker exec -it master2 /bin/bash -c 'systemctl restart icinga2'
 docker exec -it master2 /bin/bash -c "sed -i \"5c\  accept_config = true\" /etc/icinga2/features-enabled/api.conf"
 docker exec -it master2 /bin/bash -c "sed -i \"6c\  accept_commands = true\" /etc/icinga2/features-enabled/api.conf"
@@ -82,6 +84,14 @@ docker run -d --name web --net icinganet --ip 172.18.0.12 --privileged -v /sys/f
 
 
 docker exec -it web /bin/bash -c 'icingacli setup token create' | tee ./web/token.txt
-docker exec -it web /bin/bash -c 'apt install -y icingadb-web'
+docker exec -it web /bin/bash -c 'systemctl restart icinga-director'
+#
+#
 #
 read -p "Everything okay? Lets Continue, press enter key.."  REPLY
+#
+#
+#
+echo -p "lets compare config across masters.." REPLY
+docker exec -it master1 /bin/bash -c 'icinga2 daemon -C'
+docker exec -it master2 /bin/bash -c 'icinga2 daemon -C'
