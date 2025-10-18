@@ -110,7 +110,7 @@ docker exec -it sonda1 /bin/bash -c 'systemctl restart icinga2'
 docker exec -it sonda1 /bin/bash -c "icinga2 node wizard"
 docker exec -it sonda1 /bin/bash -c 'systemctl restart icinga2'
 
-printf -p "if you want to backup web-container and db-container and mysql-data-dir, as their state is inconsistent related to this script, after manual input in the Web User interface. Execute manually the following: \n
+echo -e -p "if you want to backup web-container and db-container and mysql-data-dir, as their state is inconsistent related to this script, after manual input in the Web User interface. Execute manually the following: \n
 sudo tar -cvf ./images/bbdd-var-lib-mysql_setted-L114 /var/lib/docker/volumes/bbdd-var-lib-mysql/_data && docker export bbdd > ./images/bbdd_setted-L114.tar && docker export web > web_setted-L114.tar   " REPLY
 
 

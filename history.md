@@ -1,6 +1,6 @@
 # what i learned
 
 docker compose commands must be without args,
-as i installed priviledged systemd, actually better without, as services inside systemd take care. enough launching the container
-
+as i installed priviledged systemd, actually better without commnads, as services inside systemd take care. enough launching the container
+beware of spaces in yml documents
 root pwless login: passwd -d

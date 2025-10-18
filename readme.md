@@ -26,9 +26,8 @@
 
 # other stuff
 - useful command: docker rm $(docker ps -aq)
-- beware of spaces in yml documents
-- icingacli module enable setup __ for redoing web setup: [](http://172.18.0.12/icingaweb2/setup)
-- best practice & background for troublesshooting [](https://www.neteye-blog.com/2022/03/hosts-zones-and-broken-icinga-2-configurations/)
+- "icingacli module enable setup"   for redoing web setup: [http://172.18.0.12/icingaweb2/setup](http://172.18.0.12/icingaweb2/setup)
+- best practice & background for troublesshooting [link](https://www.neteye-blog.com/2022/03/hosts-zones-and-broken-icinga-2-configurations/)
   - "Also, the configuration broke because the functionalities and configurations related to the concept of monitoring are bound together with settings related to the concept of distributivity. So decoupling them can be an effective solution. To implement this kind of scenario, we must make use of multiple inheritance: in short, we have to relegate all settings related do Cluster Zones to a dedicated set of Host Templates, which creates another Host Template Tree."
   
 # Manual config steps
@@ -36,19 +35,19 @@
 
 
 - commands - arguments
-  - define the program path, set arguments leaving everything empty but the namme & value field. besides $cnt_critical$, $cnt_warning$ which didt set a name yet?...
-  - add these to fields
+  - define the program path, set arguments leaving everything empty but the namme & value field. However, in this tutorial for  $cnt_critical$, $cnt_warning$  no name was set, why?...
+  - add these ARGS to fields
   - for windows, check external commands, nscp_api.
 
 - service templates:
-  - create a template for Agend or No-agent hosts, defining check intervals exx.
-  - create a template and import upper template, and use as check-command the command you previously created ("eg. cnt (centreon)") which imports other presets like the arguments
-  - ad args like snmp_community in "fields" tab, if you dont see them in the service template
-  - you can add nor values like $host.vars.snmp_community$ to the new field
-  - - in limnux no agend host template change in tab fields add args, eg snmpt comuntiy
-  - now this field "snmpt community" appears in all hosts, so oyu can define the val for host you would like to
+  - create a template for Agend or No-agent hosts, defining check intervals ecc.
+  - create a template and import upper template, and use as check-command the command you previously created ("eg. cnt (centreon)") which imports other presets like the arguments of hte specific commands
+  - ad args like snmp_community in the "fields" tab, if you dont see them in the service template
+  - you can add  values like $host.vars.snmp_community$ to the new field
+    - in linux-no-agend-host-template  in tab fields add args, eg snmpt comuntiy
+  - now this field "snmpt community" appears in all hosts, so you can define the value for the host you would like to
   - make new copy of cnt_general template and add field interrface name and set in service tab values: (and therefore adapt the command to monitor interfaces)
-      - put plugin [](os:linux:snmp:plugin)
-      - mode interfaces
-      - verbose yes 
-  - change data field interfacename value type string to arrayy, so you can save more and monitor multiple interfaces in one host
+      - add plugin [](os:linux:snmp:plugin)
+      - add mode interfaces
+      - add verbose yes 
+  - change data field interface_name value type string to arrayy, so you can save more and monitor multiple interfaces in one host
