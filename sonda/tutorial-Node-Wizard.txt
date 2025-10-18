@@ -1,0 +1,69 @@
+docker exec -it sonda1 /bin/bash -c "icinga2 node wizard"
+docker exec -it sonda1 /bin/bash -c 'systemctl restart icinga2'
+Welcome to the Icinga 2 Setup Wizard!
+
+We will guide you through all required configuration details.
+
+Please specify if this is an agent/satellite setup ('n' installs a master setup) [Y/n]: 
+
+Starting the Agent/Satellite setup routine...
+
+Please specify the common name (CN) [042610826beb]: sonda1
+
+Please specify the parent endpoint(s) (master or satellite) where this node should connect to:
+Master/Satellite Common Name (CN from your master/satellite node): master1
+
+Do you want to establish a connection to the parent node from this node? [Y/n]: 
+Please specify the master/satellite connection information:
+Master/Satellite endpoint host (IP address or FQDN): 172.18.0.10
+Master/Satellite endpoint port [5665]: 
+
+Add more master/satellite endpoints? [y/N]: y
+Master/Satellite Common Name (CN from your master/satellite node): 172.18.0.11
+
+Do you want to establish a connection to the parent node from this node? [Y/n]:  
+Please specify the master/satellite connection information:
+Master/Satellite endpoint host (IP address or FQDN): 172.18.0.11
+Master/Satellite endpoint port [5665]: 
+
+Add more master/satellite endpoints? [y/N]: n
+Parent certificate information:
+
+ Version:             3
+ Subject:             CN = master2
+ Issuer:              CN = Icinga CA
+ Valid From:          Oct 15 10:29:16 2025 GMT
+ Valid Until:         Nov 16 10:29:16 2026 GMT
+ Serial:              62:ac:39:8d:12:27:b6:81:4c:00:bc:98:3c:9e:85:1f:32:e2:0a:6f
+
+ Signature Algorithm: sha256WithRSAEncryption
+ Subject Alt Names:   master2
+ Fingerprint:         98 0F 57 3C FE 5C A1 87 F6 70 AE 47 E3 AA 33 ED 30 95 22 2B BC 0A D4 76 C8 22 7E AC 61 77 E7 14 
+
+Is this information correct? [y/N]: y
+
+Please specify the request ticket generated on your Icinga 2 master (optional).
+ (Hint: # icinga2 pki ticket --cn 'sonda1'): df547deb68081da46650fb4b3e17982d4aaa2731
+Please specify the API bind host/port (optional):
+Bind Host []: 
+Bind Port []: 
+
+Accept config from parent node? [y/N]: y
+Accept commands from parent node? [y/N]: y
+
+Reconfiguring Icinga...
+Disabling feature notification. Make sure to restart Icinga 2 for these changes to take effect.
+Enabling feature api. Make sure to restart Icinga 2 for these changes to take effect.
+
+Local zone name [sonda1]: monitor-satellite-zone
+Parent zone name [master]: 
+
+Default global zones: global-templates director-global
+Do you want to specify additional global zones? [y/N]: 
+
+Do you want to disable the inclusion of the conf.d directory [Y/n]: 
+Disabling the inclusion of the conf.d directory...
+
+Done.
+
+Now restart your Icinga 2 daemon to finish the installation!

@@ -1,2 +1,6 @@
-bbdd/passmysql
-web/icingaweb1-0_setted
+bbdd/data/*
+bbdd/data/
+passwords/
+passwords/*
+images/
+images/*

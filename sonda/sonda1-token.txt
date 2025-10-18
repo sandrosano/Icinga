@@ -1,0 +1,2 @@
+icinga2 pki ticket --cn sonda1            
+a453f945eab1f57c2c59265f4e7e8c8998c96f9b
